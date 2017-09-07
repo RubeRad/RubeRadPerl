@@ -1,0 +1,30 @@
+#! /bin/perl
+
+# Parse command-line switches
+use Getopt::Std;
+%opt = ();
+getopts('qtr', \%opt);
+
+$cmd   = shift @ARGV;
+$befor = shift @ARGV;
+$after = shift @ARGV;
+
+unless (defined($cmd) and defined($befor) and defined($after)) {
+    print "Usage: multi cmd before_pat after_pat\n";
+    exit(1);
+}
+
+@oldfiles = (@ARGV > 0 ? 
+	     @ARGV     :
+	     glob("*$befor*"));
+
+foreach $old (@oldfiles) {
+    chomp $old;
+    ($new = $old) =~ s/$befor/$after/;
+    $redirect = "> "                        if $opt{r};
+    $old =~ s!(\W)!\\$1!g;
+    $new =~ s!(\W)!\\$1!g;
+    $command = "$cmd $old $redirect$new";
+    print "$command\n"                  unless $opt{q};
+    system($command)                    unless $opt{t};
+}
