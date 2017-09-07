@@ -9,6 +9,7 @@ use Getopt::Std;
 use FindBin;
 use lib "$FindBin::Bin";
 use HTTP::Lite;
+use LWP::UserAgent;
 
 %opt = ();
 getopts('htr0n:f', \%opt);
@@ -99,7 +100,14 @@ for $lbl (@lbls) {
     $req = $http->request($rssOf{$lbl});
     $html = $http->body();
     #print "$html\n\n";
-    @urls = ($html =~ /enclosure.*?url\=\"(.*\.mp3)\"/g);
+    @urls = ($html =~ /enclosure.*?url\=\"(.*\.mp3)/g);
+  } elsif ($rssOf{$lbl} =~ /https/){
+      $ua = LWP::UserAgent->new;
+      $res = $ua->get($rssOf{$lbl});
+      if ($res->is_success) {
+	  $html = $res->decoded_content;
+	  @urls = ($html =~ /enclosure.*?url\=\"(.*\.mp3)/g);
+      }
   } else {
     $cmd = qq(xsltproc $FindBin::Bin/parse_enclosure.xsl "$rssOf{$lbl}");
     @urls = `$cmd`;
