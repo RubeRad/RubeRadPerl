@@ -6,9 +6,12 @@ use Getopt::Std;
 getopts('qrth', \%opt);
 
 $usage  = "multi [opts] cmd bef aft [files]\n";
+$usage .= "     generate 'cmd filebef.ext fileaft.ext' for all filenames\n";
+$usage .= "     that match pattern 'bef', replacing with 'aft'\n";
 $usage .= " -h      help; print this message\n";
 $usage .= " -t      test-only; print commands and do nothing\n";
 $usage .= " -q      quiet; execute commands but do not print\n";
+$usage .= " -r      redirect; cmd filebef.ext > fileaft.ext\n";
 if ($opt{h}) {
     print $usage;
     exit;
