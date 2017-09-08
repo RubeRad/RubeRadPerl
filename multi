@@ -3,7 +3,7 @@
 # Parse command-line switches
 use Getopt::Std;
 %opt = ();
-getopts('qrth', \%opt);
+getopts('htqrol', \%opt);
 
 $usage  = "multi [opts] cmd bef aft [files]\n";
 $usage .= "     generate 'cmd filebef.ext fileaft.ext' for all filenames\n";
@@ -12,6 +12,8 @@ $usage .= " -h      help; print this message\n";
 $usage .= " -t      test-only; print commands and do nothing\n";
 $usage .= " -q      quiet; execute commands but do not print\n";
 $usage .= " -r      redirect; cmd filebef.ext > fileaft.ext\n";
+$usage .= " -o      -o switch; cmd -o fileaft.ext filebef.ext\n";
+$usage .= " -l      like grep -l; print only filebef.ext that yield STDOUT\n";
 if ($opt{h}) {
     print $usage;
     exit;
@@ -31,12 +33,24 @@ unless (defined($cmd) and defined($befor) and defined($after)) {
 	     glob("*$befor*"));
 
 foreach $old (@oldfiles) {
+    # perform substitution
     chomp $old;
     ($new = $old) =~ s/$befor/$after/;
-    $redirect = "> "                        if $opt{r};
     $old =~ s!(\W)!\\$1!g;
     $new =~ s!(\W)!\\$1!g;
-    $command = "$cmd $old $redirect$new";
-    print "$command\n"                  unless $opt{q};
-    system($command)                    unless $opt{t};
+
+    # build command
+    if    ($opt{r}) { $command = "$cmd $old > $new"  }
+    elsif ($opt{o}) { $command = "$cmd -o $new $old" }
+    else            { $command = "$cmd $old $new"    }
+
+    # execute and/or print
+    if ($opt{l}) { # -l(ist) mode
+	$stdout = `$command`;
+	print "$old\n" if $stdout;
+	# else print nothing
+    } else { # normal operating mode
+	print "$command\n"                  unless $opt{q};
+	system($command)                    unless $opt{t};
+    }
 }
