@@ -3,7 +3,16 @@
 # Parse command-line switches
 use Getopt::Std;
 %opt = ();
-getopts('qtr', \%opt);
+getopts('qrth', \%opt);
+
+$usage  = "multi [opts] cmd bef aft [files]\n";
+$usage .= " -h      help; print this message\n";
+$usage .= " -t      test-only; print commands and do nothing\n";
+$usage .= " -q      quiet; execute commands but do not print\n";
+if ($opt{h}) {
+    print $usage;
+    exit;
+}
 
 $cmd   = shift @ARGV;
 $befor = shift @ARGV;
