@@ -9,4 +9,7 @@ alias hg="history | g"
 alias eg="env | g"
 alias fg="find . | g"
 
-
+alias gs="git status"
+alias gb="git branch"
+alias gl="git log"
+alias gdiff="git difftool -y"
