@@ -12,7 +12,7 @@ use HTTP::Lite;
 use LWP::UserAgent;
 
 %opt = ();
-getopts('htr0n:f', \%opt);
+getopts('htr0n:fd:', \%opt);
 
 $usage .= "plodder.pl -t -r -0 -n # -f [feed]\n";
 $usage .= "  -h    help (this message)\n";
@@ -21,6 +21,7 @@ $usage .= "  -r    reverse order (from oldest)\n";
 $usage .= "  -0    don't download (but put in history)\n";
 $usage .= "  -n N  number of mp3 to download\n";
 $usage .= "  -f    force (even if already in history)\n";
+$usage .= "  -d dir root directory to copy downloads\n";
 if ($opt{h}) {
   print $usage;
   exit;
@@ -58,6 +59,10 @@ while (<CFG>) {
   }
 }
 close CFG;
+
+if ($opt{d}) {
+  $dir = $opt{d};
+}
 
 die "ROOT '$dir' doesn't exist!" unless -d $dir or $opt{t} or $opt{0};
 
