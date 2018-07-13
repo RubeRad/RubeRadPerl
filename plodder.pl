@@ -46,11 +46,9 @@ while (<CFG>) {
   @ary = split;
   $cmd = shift @ary;
   if      ($cmd eq 'ROOT') {
-    $dir = shift @ary;
-    #while ($dir =~ s/\\$//) {
-    while (@ary > 0) {
-      $dir .= (" ".(shift @ary));
-    }
+    $pat = shift @ary;
+    @dirs = glob($pat);
+    for (@dirs) { if (-d) { $dir = $_; last } }
     next;
   } elsif ($cmd eq 'FEED') {
     $lbl = shift @ary;
