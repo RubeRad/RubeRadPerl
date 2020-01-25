@@ -3,7 +3,7 @@
 # Parse command-line switches
 use Getopt::Std;
 %opt = ();
-getopts('htqrol', \%opt);
+getopts('htqrol1', \%opt);
 
 $usage  = "multi [opts] cmd bef aft [files]\n";
 $usage .= "     generate 'cmd filebef.ext fileaft.ext' for all filenames\n";
@@ -14,6 +14,7 @@ $usage .= " -q      quiet; execute commands but do not print\n";
 $usage .= " -r      redirect; cmd filebef.ext > fileaft.ext\n";
 $usage .= " -o      -o switch; cmd -o fileaft.ext filebef.ext\n";
 $usage .= " -l      like grep -l; print only filebef.ext that yield STDOUT\n";
+$usage .= " -1      Run single-argument commands 'cmd bef'";
 if ($opt{h}) {
     print $usage;
     exit;
@@ -23,7 +24,7 @@ $cmd   = shift @ARGV;
 $befor = shift @ARGV;
 $after = shift @ARGV;
 
-unless (defined($cmd) and defined($befor) and defined($after)) {
+unless (defined($cmd) and defined($befor) and (defined($after) or $opt{1})) {
     print "Usage: multi cmd before_pat after_pat\n";
     exit(1);
 }
@@ -40,7 +41,8 @@ foreach $old (@oldfiles) {
     $new =~ s!(\W)!\\$1!g;
 
     # build command
-    if    ($opt{r}) { $command = "$cmd $old > $new"  }
+    if ($opt{1})    { $command = "$cmd $old"         }
+    elsif ($opt{r}) { $command = "$cmd $old > $new"  }
     elsif ($opt{o}) { $command = "$cmd -o $new $old" }
     else            { $command = "$cmd $old $new"    }
 
