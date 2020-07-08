@@ -12,7 +12,11 @@ use HTTP::Lite;
 use LWP::UserAgent;
 
 %opt = ();
+<<<<<<< HEAD
+getopts('htr0n:fd:b:', \%opt);
+=======
 getopts('htr0n:fd:', \%opt);
+>>>>>>> 6108e96707082d8c245cdd591deba542b9f5bd59
 
 $usage .= "plodder.pl -t -r -0 -n # -f [feed]\n";
 $usage .= "  -h    help (this message)\n";
@@ -22,6 +26,10 @@ $usage .= "  -0    don't download (but put in history)\n";
 $usage .= "  -n N  number of mp3 to download\n";
 $usage .= "  -f    force (even if already in history)\n";
 $usage .= "  -d dir root directory to copy downloads\n";
+<<<<<<< HEAD
+$usage .= "  -b bytes convert mp3 to a different bitrate\n";
+=======
+>>>>>>> 6108e96707082d8c245cdd591deba542b9f5bd59
 if ($opt{h}) {
   print $usage;
   exit;
@@ -130,9 +138,18 @@ for $lbl (@lbls) {
     if (exists $hstHsh{"$lbl $url"}) {
       next;
     }
+    $nam =~ s!.*\%2F!!;
+    $path = "$dir/$lbl/$nam";
+    $dupctr = 0;
+    while ($nam eq 'audio.mp3' && -f $path) {
+	$dupctr++;
+	$path = "$dir/$lbl/$nam$ctr.mp3";
+    }
+    
     if (! exists $hsh{$nam}) {
       $hsh{$nam}++;
       push @urls, $url;
+      $fname{$url} = $path;
     }
   }
 
@@ -144,12 +161,11 @@ for $lbl (@lbls) {
     #while (@urls > $n) { pop   @urls }
   #}
   for $url (@urls) {
-    ($nam=$url) =~ s!.*\/!!;
-    $fil = "$dir/$lbl/$nam";
+    $fil = $fname{$url};
     $hst = "$lbl $url";
     next if $hstHsh{$hst} && !$opt{f};
 
-    print "\t$fil\n";
+    print "\t$url --> $fil\n";
     next if $opt{t};
 
     if ($opt{0}) {
@@ -162,6 +178,15 @@ for $lbl (@lbls) {
     #print "$cmd\n";
     system $cmd;
     print HST "$hst\n";
+
+    if ($opt{b}) {
+      $b = $opt{b};
+      ($bfil = $fil) =~ s!.mp3!_$b.mp3!;
+      $cmd = qq(lame -b $opt{b} "$fil" "$bfil"\n);
+      print  $cmd;
+      system $cmd;
+      unlink $fil;
+    }
   }
 
 }
