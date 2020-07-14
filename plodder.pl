@@ -12,11 +12,7 @@ use HTTP::Lite;
 use LWP::UserAgent;
 
 %opt = ();
-<<<<<<< HEAD
 getopts('htr0n:fd:b:', \%opt);
-=======
-getopts('htr0n:fd:', \%opt);
->>>>>>> 6108e96707082d8c245cdd591deba542b9f5bd59
 
 $usage .= "plodder.pl -t -r -0 -n # -f [feed]\n";
 $usage .= "  -h    help (this message)\n";
@@ -26,10 +22,8 @@ $usage .= "  -0    don't download (but put in history)\n";
 $usage .= "  -n N  number of mp3 to download\n";
 $usage .= "  -f    force (even if already in history)\n";
 $usage .= "  -d dir root directory to copy downloads\n";
-<<<<<<< HEAD
 $usage .= "  -b bytes convert mp3 to a different bitrate\n";
-=======
->>>>>>> 6108e96707082d8c245cdd591deba542b9f5bd59
+
 if ($opt{h}) {
   print $usage;
   exit;
