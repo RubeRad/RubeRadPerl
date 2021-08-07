@@ -121,7 +121,7 @@ for $lbl (@lbls) {
 
   @allurls = @urls;
   @urls = ();
-  %hsh = ();
+  %pthhsh = ();
   for $url (@allurls) {
     next if $url =~ /\.jpg/;
     $url =~ s!\?.*!!;
@@ -133,18 +133,17 @@ for $lbl (@lbls) {
       next;
     }
     $nam =~ s!.*\%2F!!;
-    $path = "$dir/$lbl/$nam";
+    ($bas,$ext) = split /\./, $nam;
+    $path = "$dir/$lbl/$bas.$ext";
     $dupctr = 0;
-    while ($nam eq 'audio.mp3' && -f $path) {
+    while ($pthhsh{$path}) {
 	$dupctr++;
-	$path = "$dir/$lbl/$nam$ctr.mp3";
+	$path = "$dir/$lbl/$bas$dupctr.$ext";
     }
     
-    if (! exists $hsh{$nam}) {
-      $hsh{$nam}++;
-      push @urls, $url;
-      $fname{$url} = $path;
-    }
+    $pthhsh{$path}++;
+    push @urls, $url;
+    $fname{$url} = $path;
   }
 
   $n = $opt{n} || @urls;
